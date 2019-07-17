@@ -168,51 +168,18 @@ var CrossValidate = function () {
 
       return stats;
     }
-
-    /**
-     * Randomize array element order in-place.
-     * Using Durstenfeld shuffle algorithm.
-     * source: http://stackoverflow.com/a/12646864/1324039
-     */
-
   }, {
     key: 'shuffleArray',
     value: function shuffleArray(array) {
-      for (var i = array.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-      }
-      return array;
+      return loop(function (x) {
+        var i = x - (array.length - 1);
+	var j = Math.floor(Math.random() * (i + 1));
+	array[i] = array[j];
+	array[j] = temp;
+      }, array.length - 1, 1, function () {
+        return array;
+      });
     }
-
-    /**
-     *
-     * @param {object} data
-     * @param {object} trainOpts
-     * @param {number} [k]
-     * @returns {
-     *  {
-     *    avgs: {
-     *      error: number,
-     *      trainTime: number,
-     *      testTime: number,
-     *      iterations: number,
-     *      error: number
-     *    },
-     *    stats: {
-     *      truePos: number,
-     *      trueNeg: number,
-     *      falsePos: number,
-     *      falseNeg: number,
-     *      total: number
-     *    },
-     *    sets: Array
-     *  }
-     * }
-     */
-
   }, {
     key: 'train',
     value: function train(data) {
@@ -257,8 +224,8 @@ var CrossValidate = function () {
       var results = [];
       var stat = void 0;
       var isBinary = null;
-
-      for (var i = 0; i < k; i++) {
+      
+      loop(function (i) {
         var dclone = data.slice(0);
         var testSet = dclone.splice(i * size, size);
         var trainSet = dclone;
@@ -284,7 +251,7 @@ var CrossValidate = function () {
         }
 
         results.push(result);
-      }
+      }, k, 1);
 
       for (stat in avgs) {
         if (stat in avgs) {

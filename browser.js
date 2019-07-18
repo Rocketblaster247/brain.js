@@ -121,9 +121,12 @@ Object.defineProperty(exports, "__esModule", {
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
+var getTime = function () {
+	return Date.now();
+};
+	
 var CrossValidate = function () {
-
   /**
    *
    * @param {NeuralNetwork|constructor} Classifier
@@ -150,11 +153,11 @@ var CrossValidate = function () {
     key: 'testPartition',
     value: function testPartition(trainOpts, trainSet, testSet) {
       var classifier = new this.Classifier(this.options);
-      var beginTrain = Date.now();
+      var beginTrain = getTime();
       var trainingStats = classifier.train(trainSet, trainOpts);
-      var beginTest = Date.now();
+      var beginTest = getTime();
       var testStats = classifier.test(testSet);
-      var endTest = Date.now();
+      var endTest = getTime();
       var stats = Object.assign({}, testStats, {
         trainTime: beginTest - beginTrain,
         testTime: endTest - beginTest,
@@ -272,24 +275,15 @@ var CrossValidate = function () {
         }
 
         for (stat in avgs) {
-          if (stat in avgs) {
-            avgs[stat] += result[stat];
-          }
-        }
-
-        for (stat in stats) {
-          if (stat in stats) {
-            stats[stat] += result[stat];
-          }
+          avgs[stat] += result[stat];
+          stats[stat] += result[stat];
         }
 
         results.push(result);
       }
 
       for (stat in avgs) {
-        if (stat in avgs) {
-          avgs[stat] /= k;
-        }
+        avgs[stat] /= k;
       }
 
       if (isBinary) {
